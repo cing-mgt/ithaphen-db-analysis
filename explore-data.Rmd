@@ -127,7 +127,8 @@ f_1b_bottom = ggplot(pd_1b_bottom, aes(y=sex)) +
         axis.ticks.y = element_blank())
 
 pd_1b_top = read_xlsx(file.path(params$input_path, "plot-data.xlsx"),
-                   sheet = "Figure 1B Top")
+                   sheet = "Figure 1B Top") %>% 
+  mutate(age_group = factor(age_group, levels = c("Prenatal", "Under 5", "5-19", "Above 19", "Unknown")))
 
 f_1b_top = ggplot(pd_1b_top, aes(y = age_group, x = percentage)) +
   geom_bar(stat = "identity", colour = "#959796", fill = "#959796", width = 0.75) +
@@ -145,7 +146,11 @@ f_1b_top = ggplot(pd_1b_top, aes(y = age_group, x = percentage)) +
         axis.line.y = element_blank(),
         axis.ticks.y = element_blank()) 
 
-pd_1b = pd_1b_bottom %>% mutate(group = "Sex") %>% rename(y = sex) %>% bind_rows(pd_1b_top %>% mutate(group = "Age") %>% rename(y = age_group))
+pd_1b = pd_1b_bottom %>% mutate(group = "Sex") %>%
+  rename(y = sex) %>%
+  bind_rows(pd_1b_top %>% mutate(group = "Age") %>%
+              rename(y = age_group)) %>% 
+  mutate(y = factor(y, levels = c("Female", "Male", "Prenatal", "Under 5", "5-19", "Above 19", "Unknown")))
 f_1b = ggplot(pd_1b, aes(y = y, x = percentage)) +
   facet_wrap(~group, nrow =2, scales="free_y") +
   geom_bar(stat = "identity",
